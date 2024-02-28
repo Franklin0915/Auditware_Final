@@ -46,7 +46,7 @@ function SignUp() {
     event.preventDefault()
    
     try{
-      const res = await axiosInstance.post(`/signup`, SignUp);
+      const res = await axiosInstance.post(`/signup`, detail);
       console.log(res.data)
       sessionStorage.setItem("email",SignUp.email_address);
   
