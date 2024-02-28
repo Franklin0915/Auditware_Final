@@ -13,7 +13,9 @@ import { InputContainer } from "./signIn";
 import { LeftCover } from "./signIn";
 import { WelcomeBack } from "./signIn";
 import { LeftMidBlock } from "./signIn";
+import Loading from "../../Common/Components/Loading";
 import axiosInstance from "../../Service/axios";
+import useMain from "../../Common/Hooks/useMain";
 
 
 
@@ -22,6 +24,8 @@ function SignUp() {
   const [detail, setDetail] = React.useState({ email_address: "", password: "", first_name: "", last_name: "" });
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [formDataJson, setFormDataJson] = React.useState(null); 
+  const {isLoading, setLoading} = useMain()
 
 
 
@@ -32,38 +36,37 @@ function SignUp() {
       [name]: type === "checkbox" ? checked : value,
     }));
   }
-  function submitForm(e){
-    e.preventDefault();
-
-    axiosInstance.post('/signup/', detail)
-    .then(res=>{
-      console.log(res)
-    }).catch(err=>{
-      console.log(err)
-    })
-  }
+ 
   const handleSubmit = async(event)=>{
     event.preventDefault()
    
     try{
       const res = await axiosInstance.post(`/signup`, detail);
+      
       console.log(res.data)
-      sessionStorage.setItem("email",SignUp.email_address);
+      sessionStorage.setItem("email",detail.email_address);
+      setLoading(true)
   
       setTimeout(() => {
-        
+        setLoading(false)
         navigate('/auth-email-verification');
       }, 500);
     }
     catch(error){
-      
+      setLoading(false)
       console.log(error)
     }
   }
+  React.useEffect(() => {
+    setFormDataJson(JSON.stringify(detail, null, 2));
+  }, [detail]);
    
   return (
     <Wrapper content={<>
+      <Loading status={isLoading}/>
     <LeftCover>
+    <p>Form Data JSON:</p>
+              <pre>{formDataJson}</pre>
     <LeftMidBlock className="left-mid-block">
             <WelcomeBack className="m-1">
               <p>Create an account</p>
